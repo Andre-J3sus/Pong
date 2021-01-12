@@ -15,6 +15,8 @@ const val RACKET_INITIAL_Y = (HEIGHT-RACKET_HEIGHT)/2 //Coordenada Y inicial
 //Funções que retornam a coordenada Y da raquete com o deslocamento:
 fun Racket.up() = Racket(Position(pos.x, pos.y - RACKET_DY)) //subtraido - sobe
 fun Racket.down() = Racket(Position(pos.x, pos.y + RACKET_DY)) //acrescentado - desce
+fun Racket.upLimit() = Racket(Position(pos.x, 0))
+fun Racket.bottomLimit() = Racket(Position(pos.x, RACKET_LIMIT_Y))
 
 fun Racket.rangeY() = pos.y..pos.y + RACKET_HEIGHT //Função que retorna o intervalo de valores Y da raquete
 fun Racket.xLimit() = if (pos.x < WIDTH/2) pos.x + RACKET_WIDTH + BALL_RADIUS else pos.x - BALL_RADIUS
@@ -37,29 +39,14 @@ fun Canvas.drawRacket(rk:Racket){
  */
 fun Game.moveRacket(ke: KeyEvent):Game{
     return when(ke.code){
-        UP_CODE   -> {
-            Game(ball, p1, Player(
-                if (p2.bat.nextY() <= 0) Racket(Position(p2.bat.pos.x, 0)) else p2.bat.up(),
-                p2.score), states)
-        }
+        UP_CODE   -> this.copy(p2 = p2.copy(bat = if (p2.bat.nextY() <= 0) p2.bat.upLimit() else p2.bat.up()))
 
-        DOWN_CODE -> {
-            Game(ball, p1, Player(
-                if (p2.bat.nextBottomY() >= HEIGHT) Racket(Position(p2.bat.pos.x, RACKET_LIMIT_Y)) else p2.bat.down(),
-                p2.score), states)
-        }
+        DOWN_CODE -> this.copy(p2 = p2.copy(bat = if (p2.bat.nextBottomY() >= HEIGHT) p2.bat.bottomLimit() else p2.bat.down()))
 
-        W_CODE    -> {
-            Game(ball, Player(
-                if (p1.bat.nextY() <= 0) Racket(Position(p1.bat.pos.x, 0)) else p1.bat.up(),
-                p2.score), p2, states)
-        }
+        W_CODE    -> this.copy(p1 = p1.copy(bat = if (p1.bat.nextY() <= 0) p1.bat.upLimit() else p1.bat.up()))
 
-        S_CODE    -> {
-            Game(ball, Player(
-                if (p1.bat.nextBottomY() >= HEIGHT) Racket(Position(p1.bat.pos.x, RACKET_LIMIT_Y)) else p1.bat.down(),
-                p2.score), p2, states)
-        }
+        S_CODE    -> this.copy(p1 = p1.copy(bat = if (p1.bat.nextBottomY() >= HEIGHT) p1.bat.bottomLimit() else p1.bat.down()))
+
         else -> this
     }
 }

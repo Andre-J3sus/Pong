@@ -3,7 +3,7 @@ import pt.isel.canvas.*
 
 data class States(val playing: Boolean, val finished :Boolean, val menu :Boolean)
 //Class Game que contém uma bola, uma raquete1 e uma raquete 2
-data class Game(val ball: Ball, val p1: Player, val p2: Player, val states :States)
+data class Game(val ball: Ball, val p1: Player, val p2: Player, val states :States, val menu: Menu)
 
 //Constantes de:
 const val WIDTH = 600            //Comprimento do jogo
@@ -24,7 +24,7 @@ const val SCORE_SIZE = 24        //Tamanho da fonte da pontuação
 fun Canvas.drawGame(game:Game){
     erase()
     if(game.states.menu){
-        drawText(HEIGHT/4, SCORE_Y*2, "MENU", BLUE, 64)
+        drawMenu(game.menu)
     }
     else{
         drawBall(game.ball)
@@ -51,7 +51,8 @@ fun startConditions() = Game(
     States(
         playing = false,
         finished = false,
-        menu = false)
+        menu = true),
+    Menu(Buttom(Position(WIDTH/2, HEIGHT/2), "PLAY", false))
 )
 
 
@@ -71,13 +72,14 @@ fun Game.startingGame() = startConditions().copy(
 /**
  * Função que verifica se a bola está parada e retorna um Jogo com a bola a movimentar-se
  */
-fun Game.startPlaying() = Game(Ball(ball.pos, Velocity(dxRange.random(), dyRange.random())), p1, p2, states.copy(playing = true))
+fun Game.startPlaying() =
+    Game(Ball(ball.pos, Velocity(dxRange.random(), dyRange.random())), p1, p2, states.copy(playing = true), menu)
 
 
 /**
  * Função que retorna um Game com a bola movimentada
  */
-fun Game.moveBall()= if (states.playing && !states.finished) Game(ball.move(this), p1, p2, states) else this
+fun Game.moveBall()= if (states.playing && !states.finished) Game(ball.move(this), p1, p2, states, menu) else this
 
 
 /**
@@ -87,11 +89,11 @@ fun Game.checkGoal():Game{
     return when{
         ball.leaveByRight()-> {
             playSound("goal")
-            Game(ball, p1.addScore(), p2, States(playing = false, finished = p1.addScore().wins(), states.menu)).startingGame()
+            Game(ball, p1.addScore(), p2, States(playing = false, finished = p1.addScore().wins(), states.menu), menu).startingGame()
         }
         ball.leaveByLeft()-> {
             playSound("goal")
-            Game(ball, p1, p2.addScore(), States(playing = false, finished = p2.addScore().wins(), states.menu)).startingGame()
+            Game(ball, p1, p2.addScore(), States(playing = false, finished = p2.addScore().wins(), states.menu), menu).startingGame()
         }
         else -> this
     }

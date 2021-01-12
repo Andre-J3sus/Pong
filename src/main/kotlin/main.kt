@@ -23,10 +23,20 @@ fun main(){
             arena.drawGame(pong)                  //Desenhamos o jogo
         }
 
+        arena.onMouseMove { me-> //Animação de rato a passar pelos botões
+            pong = if (pong.states.menu && pong.menu.pb.mouseOnButtom(me))
+                pong.copy(menu = pong.menu.copy(pb = pong.menu.pb.copy(mouse =  true)))
+            else
+                pong.copy(menu = pong.menu.copy(pb = pong.menu.pb.copy(mouse =  false)))
+        }
+
+        arena.onMouseDown { me-> //Clicar no botão
+            if (pong.states.menu && pong.menu.pb.mouseOnButtom(me)) pong = pong.copy(states = pong.states.copy(menu=false))
+        }
+
         //Quando uma tecla é pressionada: retorna um jogo com alguma das raquetes movidas, ou não
         arena.onKeyPressed { ke->
             if (!pong.states.playing && !pong.states.menu) pong = pong.startPlaying()//Se o jogo está parado, retorna um jogo em movimento
-            if (pong.states.menu && ke.char == 'P') pong = pong.copy(states = pong.states.copy(menu=false))
             pong = pong.moveRacket(ke)                          //Movimenta as raquetes do jogo
         }
     }
