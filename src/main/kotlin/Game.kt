@@ -52,7 +52,7 @@ fun startConditions() = Game(
         playing = false,
         finished = false,
         menu = true),
-    Menu(Buttom(Position(WIDTH/2, HEIGHT/2), "PLAY", false))
+    Menu(Button(Position(WIDTH/2, HEIGHT/2), "PLAY", false))
 )
 
 
