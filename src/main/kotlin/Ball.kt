@@ -11,8 +11,8 @@ typealias Collision = Pair<Int, Boolean> //Colisão é um par com Int(xLimite) e
 
 const val BALL_RADIUS = 7//Raio da Bola
 
-val dxRange = (-4..4).toList() - 0 //Lista com os possíveis deslocamentos Dx da bola
-val dyRange = (-4..4).toList() - 0 //Lista com os possíveis deslocamentos Dy da bola
+val dxRange = listOf(-4, 4) //Lista com os possíveis deslocamentos Dx da bola
+val dyRange = listOf(-4, 4) //Lista com os possíveis deslocamentos Dy da bola
 
 
 fun Ball.leaveByRight() = pos.x + vel.dy - BALL_RADIUS > WIDTH //True quando a bola sai pelo lado direito

@@ -16,27 +16,26 @@ fun main(){
         arena.onTimeProgress(10){
             arena.erase() //Limpamos a janela
 
-            if (pong.states.playing && !pong.ball.isMoving())
-                pong = pong.startPlaying() //Se estamos em jogo e a bola está parada retorna um jogo com a bola a mover-se
+            //pong = pong.startPlaying() //Verifica se estamos em jogo e a bola está parada, se sim retorna um jogo com a bola a mover-se
+
+            pong = pong.moveByAI()  //Movimentação da raquete 1 por Inteligência Artificial
 
             pong = pong.moveBall().checkGoal()    //Movemos o jogo e verificamos se a bola saiu da janela(houve golo)
             arena.drawGame(pong)                  //Desenhamos o jogo
         }
 
-        arena.onMouseMove { me-> //Animação de rato a passar pelos botões
-            pong = if (pong.states.menu && pong.menu.pb.mouseOnButtom(me))
-                pong.copy(menu = pong.menu.copy(pb = pong.menu.pb.copy(mouse =  true)))
-            else
-                pong.copy(menu = pong.menu.copy(pb = pong.menu.pb.copy(mouse =  false)))
+        arena.onMouseMove { me->
+            pong = pong.moveByMouse(me) //Mover raquete com o mouse
+            pong = pong.checkMouseOn(me)//Animação de rato a passar pelos botões
         }
 
-        arena.onMouseDown { me-> //Clicar no botão
-            if (pong.states.menu && pong.menu.pb.mouseOnButtom(me)) pong = pong.copy(states = pong.states.copy(menu=false))
+        arena.onMouseDown { me->
+            pong = pong.checkClick(me) //Verificar se houve click no botão
         }
 
         //Quando uma tecla é pressionada: retorna um jogo com alguma das raquetes movidas, ou não
         arena.onKeyPressed { ke->
-            if (!pong.states.playing && !pong.states.menu) pong = pong.startPlaying()//Se o jogo está parado, retorna um jogo em movimento
+            pong = pong.startPlaying()//Se o jogo está parado, retorna um jogo em movimento
             pong = pong.moveRacket(ke)                          //Movimenta as raquetes do jogo
         }
     }

@@ -73,7 +73,9 @@ fun Game.startingGame() = startConditions().copy(
  * Função que verifica se a bola está parada e retorna um Jogo com a bola a movimentar-se
  */
 fun Game.startPlaying() =
-    Game(Ball(ball.pos, Velocity(dxRange.random(), dyRange.random())), p1, p2, states.copy(playing = true), menu)
+    if(!states.playing && !ball.isMoving() && !states.menu)
+        Game(Ball(ball.pos, Velocity(dxRange.random(), dyRange.random())), p1, p2, states.copy(playing = true), menu)
+    else this
 
 
 /**
