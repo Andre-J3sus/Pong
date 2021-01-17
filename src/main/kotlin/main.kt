@@ -16,12 +16,15 @@ fun main(){
         arena.onTimeProgress(10){
             arena.erase() //Limpamos a janela
 
-            //pong = pong.startPlaying() //Verifica se estamos em jogo e a bola está parada, se sim retorna um jogo com a bola a mover-se
-
-            pong = pong.moveByAI()  //Movimentação da raquete 1 por Inteligência Artificial
+            //pong = pong.moveByAI()  //Movimentação da raquete 1 por Inteligência Artificial
+            pong = pong.moveRacket2Players()
 
             pong = pong.moveBall().checkGoal()    //Movemos o jogo e verificamos se a bola saiu da janela(houve golo)
             arena.drawGame(pong)                  //Desenhamos o jogo
+        }
+
+        arena.onTimeProgress(5000){
+            if (pong.states.playing) pong = pong.speed()
         }
 
         arena.onMouseMove { me->
@@ -36,7 +39,8 @@ fun main(){
         //Quando uma tecla é pressionada: retorna um jogo com alguma das raquetes movidas, ou não
         arena.onKeyPressed { ke->
             pong = pong.startPlaying()//Se o jogo está parado, retorna um jogo em movimento
-            pong = pong.moveRacket(ke)                          //Movimenta as raquetes do jogo
+            //pong = pong.moveRacket(ke)                          //Movimenta as raquetes do jogo
+            pong = pong.checkKey(ke)
         }
     }
 

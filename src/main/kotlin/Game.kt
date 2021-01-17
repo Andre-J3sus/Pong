@@ -46,8 +46,8 @@ fun Canvas.drawGame(game:Game){
  */
 fun startConditions() = Game(
     Ball(Position(WIDTH/2, HEIGHT/2), Velocity(0, 0)),
-    Player(Racket(Position(10, RACKET_INITIAL_Y)), 0),
-    Player(Racket(Position(WIDTH - (RACKET_WIDTH + 10), RACKET_INITIAL_Y)), 0),
+    Player(Racket(Position(10, RACKET_INITIAL_Y), up = false, down = false), 0),
+    Player(Racket(Position(WIDTH - (RACKET_WIDTH + 10), RACKET_INITIAL_Y), up = false, down = false), 0),
     States(
         playing = false,
         finished = false,

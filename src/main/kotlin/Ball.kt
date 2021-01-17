@@ -11,8 +11,8 @@ typealias Collision = Pair<Int, Boolean> //Colisão é um par com Int(xLimite) e
 
 const val BALL_RADIUS = 7//Raio da Bola
 
-val dxRange = listOf(-4, 4) //Lista com os possíveis deslocamentos Dx da bola
-val dyRange = listOf(-4, 4) //Lista com os possíveis deslocamentos Dy da bola
+val dxRange = listOf(-3, 3) //Lista com os possíveis deslocamentos Dx da bola
+val dyRange = listOf(-3, 3) //Lista com os possíveis deslocamentos Dy da bola
 
 
 fun Ball.leaveByRight() = pos.x + vel.dy - BALL_RADIUS > WIDTH //True quando a bola sai pelo lado direito
@@ -98,3 +98,11 @@ fun checkCollide(bat:Racket, closestX: Int, newX: Int, newY: Int):Collision{
     val collided = calculateDistance(newX, newY, closestX, closestY) <= BALL_RADIUS
     return Collision(xLimit, collided)
 }
+
+
+/**
+ * Função que retorna um Game com a velocidade da bola aumentada
+ */
+fun Game.speed():Game = copy(ball = ball.copy(vel = Velocity(
+    if (ball.vel.dx > 0) ball.vel.dx+1 else ball.vel.dx-1,
+    if (ball.vel.dy > 0) ball.vel.dy+1 else ball.vel.dy-1)))
