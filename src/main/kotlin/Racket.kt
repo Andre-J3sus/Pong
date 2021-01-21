@@ -16,8 +16,6 @@ const val RACKET_INITIAL_Y = (HEIGHT-RACKET_HEIGHT)/2 //Coordenada Y inicial
 fun Racket.up() = copy(pos = Position(pos.x, pos.y - RACKET_DY)) //subtraido - sobe
 fun Racket.down() = copy(pos = Position(pos.x, pos.y + RACKET_DY)) //acrescentado - desce
 
-fun Racket.upLimit() = copy(pos = Position(pos.x, 0)) //Raquete na sua coordenada Y mínima
-fun Racket.bottomLimit() = copy(pos = Position(pos.x, RACKET_LIMIT_Y)) //Raquete na sua coordenada Y maxima
 fun Racket.rangeY() = pos.y..pos.y + RACKET_HEIGHT //Função que retorna o intervalo de valores Y da raquete
 fun Racket.xLimit() = if (pos.x < WIDTH/2) pos.x + RACKET_WIDTH + BALL_RADIUS else pos.x - BALL_RADIUS
 fun Racket.nextBottomY() = pos.y + RACKET_HEIGHT + RACKET_DY //Próxima coordenada Y debaixo da raquete
@@ -25,35 +23,23 @@ fun Racket.nextY() = pos.y - RACKET_DY //Próxima coordenada Y da raquete
 fun Racket.centerY() = pos.y + RACKET_HEIGHT/2 //Coodenada Y do centro da raquete
 
 
+
 /**
  * Função que desenha a raquete
  */
-fun Canvas.drawRacket(rk:Racket){
-    drawRect(rk.pos.x, rk.pos.y, RACKET_WIDTH, RACKET_HEIGHT, BLACK)
-}
-
-
-/**
- * Função que retorna um Game com a raquete direita(bat2) movimenta-se com a seta para cima e a seta para baixo
- */
-fun Game.moveRacket1Player(ke: KeyEvent):Game{
-    return when(ke.code){
-        UP_CODE   -> this.copy(p2 = p2.copy(bat = if (p2.bat.nextY() <= 0) p2.bat.upLimit() else p2.bat.up()))
-
-        DOWN_CODE -> this.copy(p2 = p2.copy(bat = if (p2.bat.nextBottomY() >= HEIGHT) p2.bat.bottomLimit() else p2.bat.down()))
-
-        else -> this
-    }
+fun Canvas.drawRacket(rk:Racket, color:Int){
+    drawRect(rk.pos.x, rk.pos.y, RACKET_WIDTH, RACKET_HEIGHT, color)
+    drawRect(rk.pos.x-BALL_BORDER, rk.pos.y-BALL_BORDER, RACKET_WIDTH+BALL_BORDER, RACKET_HEIGHT+BALL_BORDER, BLACK, BALL_BORDER)
 }
 
 
 /**
  * Função que retorna um Game com as raquetes em movimento
  */
-fun Game.moveRacket2Players():Game = copy(p1 = p1.copy(bat = p1.bat.moviment()), p2 = p2.copy(bat = p2.bat.moviment()))
+fun Game.moveRacket2Players():Game = copy(p1 = p1.copy(bat = p1.bat.movement()), p2 = p2.copy(bat = p2.bat.movement()))
 
 
-fun Racket.moviment():Racket =
+fun Racket.movement():Racket =
     when{
         up && nextY() >= 0              -> up()
         down && nextBottomY() <= HEIGHT -> down()

@@ -1,21 +1,25 @@
 import pt.isel.canvas.*
 
 
-data class States(val playing: Boolean, val finished :Boolean, val menu :Boolean)
+data class States(val playing: Boolean, val finished :Boolean, val menu :Boolean, val aiXPl :Boolean, val plXPl:Boolean)
 //Class Game que contém uma bola, uma raquete1 e uma raquete 2
 data class Game(val ball: Ball, val p1: Player, val p2: Player, val states :States, val menu: Menu)
 
 //Constantes de:
 const val WIDTH = 600            //Comprimento do jogo
 const val HEIGHT = 400           //Altura do jogo
-const val GREY = 0x808080        //Cor cizenta(background da janela)
-const val SCORE_X = WIDTH/2 - 27 //Coordenada X da pontuação
+const val FIELD_GREEN = 0x228B22 //Cor cizenta(background da janela)
+const val GOLD = 0xFFD700
+const val LINES_THICKNESS = 3
+const val LINES_RADIUS = 7
+const val SCORE_X = WIDTH/2 - 34 //Coordenada X da pontuação
 const val SCORE_Y = 40           //Coordenada Y da pontuação
-const val SCORE_SIZE = 24        //Tamanho da fonte da pontuação
+const val SCORE_SIZE = 28        //Tamanho da fonte da pontuação
 
 
 /**
  * Função que recebe um jogo e:
+ *  - desenha as linhas do jogo
  *  - desenha a sua bola
  *  - desenha a raquete 1 (esquerda)
  *  - desenha a raquete 2 (direita)
@@ -23,20 +27,23 @@ const val SCORE_SIZE = 24        //Tamanho da fonte da pontuação
  */
 fun Canvas.drawGame(game:Game){
     erase()
-    if(game.states.menu){
-        drawMenu(game.menu)
-    }
+    drawLines()
+
+    if(game.states.menu) drawMenu(game.menu)
     else{
         drawBall(game.ball)
-        drawRacket(game.p1.bat)
-        drawRacket(game.p2.bat)
+        drawRacket(game.p1.bat, CYAN)
+        drawRacket(game.p2.bat, RED)
         if (!game.states.finished){
-            drawText(SCORE_X, SCORE_Y, "${game.p1.score} : ${game.p2.score}", BLACK, SCORE_SIZE)
-            drawRect(SCORE_X - 2, SCORE_Y - SCORE_SIZE +2, SCORE_SIZE*2 + 12, SCORE_SIZE + 2, BLACK, 2)
+            drawText(SCORE_X, SCORE_Y, "${game.p1.score}", BLACK, SCORE_SIZE+1) //CYAN SCORE SHADOW
+            drawText(SCORE_X, SCORE_Y, "${game.p1.score}", CYAN, SCORE_SIZE) //CYAN SCORE
+            drawText(SCORE_X, SCORE_Y, "     ${game.p2.score}", BLACK, SCORE_SIZE+1) //RED SCORE SHADOW
+            drawText(SCORE_X, SCORE_Y, "     ${game.p2.score}", RED, SCORE_SIZE) //RED SCORE
         }
-        else{
-            if (game.p1.wins()) writeWins(1) else writeWins(2)
-        }
+        else
+            drawButton(game.menu.menuButton, YELLOW, GOLD)
+            if (game.p1.wins()) writeWins(1, CYAN)
+            else if(game.p1.wins())writeWins(2, RED)
     }
 }
 
@@ -51,8 +58,15 @@ fun startConditions() = Game(
     States(
         playing = false,
         finished = false,
-        menu = true),
-    Menu(Button(Position(WIDTH/2, HEIGHT/2), "PLAY", false))
+        menu = true,
+        aiXPl = false,
+        plXPl = false
+    ),
+    Menu(
+        Button(Position(WIDTH/4, HEIGHT/2), " 1 Player", false),
+        Button(Position(WIDTH*3/4, HEIGHT/2), "2 Players", false),
+        Button(Position(WIDTH/2, HEIGHT/2), "  MENU", false)
+    )
 )
 
 
@@ -64,7 +78,9 @@ fun Game.startingGame() = startConditions().copy(
     p2=Player(startConditions().p2.bat, this.p2.score),
     states = states.copy(
         finished = this.states.finished,
-        menu = this.states.menu
+        menu = this.states.menu,
+        aiXPl = this.states.aiXPl,
+        plXPl = this.states.plXPl,
     )
 )
 
@@ -91,12 +107,28 @@ fun Game.checkGoal():Game{
     return when{
         ball.leaveByRight()-> {
             playSound("goal")
-            Game(ball, p1.addScore(), p2, States(playing = false, finished = p1.addScore().wins(), states.menu), menu).startingGame()
+            Game(ball, p1.addScore(), p2, states.copy(playing = false, finished = p1.addScore().wins()), menu).startingGame()
         }
         ball.leaveByLeft()-> {
             playSound("goal")
-            Game(ball, p1, p2.addScore(), States(playing = false, finished = p2.addScore().wins(), states.menu), menu).startingGame()
+            Game(ball, p1, p2.addScore(), states.copy(playing = false, finished = p2.addScore().wins()), menu).startingGame()
         }
         else -> this
     }
+}
+
+fun Canvas.drawLines(){
+    drawLine(WIDTH/2, 0, WIDTH/2, HEIGHT, WHITE, LINES_THICKNESS)
+    drawCircle(WIDTH/2, HEIGHT/2, 30, WHITE, LINES_THICKNESS)
+    drawCircle(WIDTH/2, HEIGHT/2, LINES_RADIUS, WHITE)
+
+    drawArc(0, 0, LINES_RADIUS, -90, 0, WHITE, LINES_THICKNESS)
+    drawArc(WIDTH, 0, LINES_RADIUS, 180, 270, WHITE, LINES_THICKNESS)
+    drawArc(0, HEIGHT, LINES_RADIUS, 0, 90, WHITE, LINES_THICKNESS)
+    drawArc(WIDTH, HEIGHT, LINES_RADIUS, 90, 180, WHITE, LINES_THICKNESS)
+
+    drawLine(0, 0, WIDTH, 0, WHITE, LINES_THICKNESS)
+    drawLine(0, 0, 0, HEIGHT, WHITE, LINES_THICKNESS)
+    drawLine(0, HEIGHT, WIDTH, HEIGHT, WHITE, LINES_THICKNESS)
+    drawLine(WIDTH, HEIGHT, WIDTH, 0, WHITE, LINES_THICKNESS)
 }

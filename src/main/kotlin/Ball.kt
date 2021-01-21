@@ -10,6 +10,7 @@ data class Ball(val pos:Position, val vel:Velocity) //Bola com posição e veloc
 typealias Collision = Pair<Int, Boolean> //Colisão é um par com Int(xLimite) e Boolean(true se colidiu)
 
 const val BALL_RADIUS = 7//Raio da Bola
+const val BALL_BORDER = 1
 
 val dxRange = listOf(-3, 3) //Lista com os possíveis deslocamentos Dx da bola
 val dyRange = listOf(-3, 3) //Lista com os possíveis deslocamentos Dy da bola
@@ -22,10 +23,11 @@ fun Ball.isMoving() = !(vel.dx == 0 && vel.dy == 0) //True se a bola está a mov
 
 
 /**
- * Função que recebe uma bola e desenha a mesma
+ * Função que recebe uma bola e desenha a mesma com borda
  */
 fun Canvas.drawBall(b:Ball){
-    drawCircle(b.pos.x, b.pos.y, BALL_RADIUS, CYAN)
+    drawCircle(b.pos.x, b.pos.y, BALL_RADIUS, WHITE)
+    drawCircle(b.pos.x, b.pos.y, BALL_RADIUS+BALL_BORDER, BLACK, BALL_BORDER)
 }
 
 
