@@ -3,6 +3,7 @@ import pt.isel.canvas.*
 
 //Data class menu com botão de play
 data class Menu (val onePlayerButton:Button, val twoPlayersButton:Button, val menuButton: Button)
+
 //Data classe botão, com posição, texto e Boolean que fica true quando o mouse está em cima do mesmo
 data class Button(val pos:Position, val txt:String, val mouseOn:Boolean)
 

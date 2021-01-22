@@ -1,17 +1,19 @@
 import pt.isel.canvas.*
 
 
+//Class States com os estados do jogo
 data class States(val playing: Boolean, val finished :Boolean, val menu :Boolean, val aiXPl :Boolean, val plXPl:Boolean)
-//Class Game que contém uma bola, uma raquete1 e uma raquete 2
+
+//Class Game que contém uma bola, um jogador 1, um jogador 2, estados e menu
 data class Game(val ball: Ball, val p1: Player, val p2: Player, val states :States, val menu: Menu)
 
 //Constantes de:
 const val WIDTH = 600            //Comprimento do jogo
 const val HEIGHT = 400           //Altura do jogo
 const val FIELD_GREEN = 0x228B22 //Cor cizenta(background da janela)
-const val GOLD = 0xFFD700
-const val LINES_THICKNESS = 3
-const val LINES_RADIUS = 7
+const val GOLD = 0xFFD700        //Cor dourada (título do jogo)
+const val LINES_THICKNESS = 3    //Grossura das linhas do background
+const val LINES_RADIUS = 7       //Raio das linhas do background
 const val SCORE_X = WIDTH/2 - 34 //Coordenada X da pontuação
 const val SCORE_Y = 40           //Coordenada Y da pontuação
 const val SCORE_SIZE = 28        //Tamanho da fonte da pontuação
@@ -20,30 +22,31 @@ const val SCORE_SIZE = 28        //Tamanho da fonte da pontuação
 /**
  * Função que recebe um jogo e:
  *  - desenha as linhas do jogo
- *  - desenha a sua bola
- *  - desenha a raquete 1 (esquerda)
- *  - desenha a raquete 2 (direita)
- *  - desenha a pontuação
+ *  - Se estivermos no menu, desenha o menu;
+ *  - Senão:
+ *      - desenha a sua bola
+ *      - desenha a raquete 1 (esquerda)
+ *      - desenha a raquete 2 (direita)
+ *      - desenha a pontuação se o ogo estiver a decorrer
+ *      - desenha o botão de voltar ao menu se o jogo tiver acabado
+ *      - desenha quem foi o vencedor se o jogo tiver acabado
  */
 fun Canvas.drawGame(game:Game){
     erase()
     drawLines()
 
     if(game.states.menu) drawMenu(game.menu)
+
     else{
         drawBall(game.ball)
         drawRacket(game.p1.bat, CYAN)
         drawRacket(game.p2.bat, RED)
-        if (!game.states.finished){
-            drawText(SCORE_X, SCORE_Y, "${game.p1.score}", BLACK, SCORE_SIZE+1) //CYAN SCORE SHADOW
-            drawText(SCORE_X, SCORE_Y, "${game.p1.score}", CYAN, SCORE_SIZE) //CYAN SCORE
-            drawText(SCORE_X, SCORE_Y, "     ${game.p2.score}", BLACK, SCORE_SIZE+1) //RED SCORE SHADOW
-            drawText(SCORE_X, SCORE_Y, "     ${game.p2.score}", RED, SCORE_SIZE) //RED SCORE
-        }
-        else
+        if (!game.states.finished) drawScore(game)
+        else {
             drawButton(game.menu.menuButton, YELLOW, GOLD)
             if (game.p1.wins()) writeWins(1, CYAN)
-            else if(game.p1.wins())writeWins(2, RED)
+            else writeWins(2, RED)
+        }
     }
 }
 
@@ -117,6 +120,10 @@ fun Game.checkGoal():Game{
     }
 }
 
+
+/**
+ * Função que desenha as linhas do background do jogo
+ */
 fun Canvas.drawLines(){
     drawLine(WIDTH/2, 0, WIDTH/2, HEIGHT, WHITE, LINES_THICKNESS)
     drawCircle(WIDTH/2, HEIGHT/2, 30, WHITE, LINES_THICKNESS)
@@ -131,4 +138,14 @@ fun Canvas.drawLines(){
     drawLine(0, 0, 0, HEIGHT, WHITE, LINES_THICKNESS)
     drawLine(0, HEIGHT, WIDTH, HEIGHT, WHITE, LINES_THICKNESS)
     drawLine(WIDTH, HEIGHT, WIDTH, 0, WHITE, LINES_THICKNESS)
+}
+
+/**
+ * Função que desenha o score
+ */
+fun Canvas.drawScore(game:Game){
+    drawText(SCORE_X, SCORE_Y, "${game.p1.score}", BLACK, SCORE_SIZE+1) //CYAN SCORE SHADOW
+    drawText(SCORE_X, SCORE_Y, "${game.p1.score}", CYAN, SCORE_SIZE) //CYAN SCORE
+    drawText(SCORE_X, SCORE_Y, "     ${game.p2.score}", BLACK, SCORE_SIZE+1) //RED SCORE SHADOW
+    drawText(SCORE_X, SCORE_Y, "     ${game.p2.score}", RED, SCORE_SIZE) //RED SCORE
 }
